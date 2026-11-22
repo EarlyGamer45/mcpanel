@@ -1,0 +1,46 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Queue worker (systemd: mcpanel-worker.service). Processes the default queue
+ * (mail, housekeeping) and the provisioning queue in the same process, one job
+ * at a time, so a failing panel call cannot starve emails.
+ */
+
+require dirname(__DIR__) . '/bootstrap/autoload.php';
+
+use App\Core\App;
+use App\Core\Logger;
+use App\Core\Queue;
+
+App::boot(dirname(__DIR__));
+
+$queues = ['default', 'provisioning'];
+$stop = false;
+if (function_exists('pcntl_signal')) {
+    pcntl_async_signals(true);
+    pcntl_signal(SIGTERM, static function () use (&$stop): void {
+        $stop = true;
+    });
+    pcntl_signal(SIGINT, static function () use (&$stop): void {
+        $stop = true;
+    });
+}
+
+Logger::info('worker.started', ['queues' => $queues, 'pid' => getmypid()]);
+
+while (!$stop) {
+    $worked = false;
+    foreach ($queues as $queue) {
+        if (Queue::runNext($queue)) {
+            $worked = true;
+        }
+    }
+    if (!$worked) {
+        usleep(500000);
+    }
+}
+
+Logger::info('worker.stopped', ['pid' => getmypid()]);

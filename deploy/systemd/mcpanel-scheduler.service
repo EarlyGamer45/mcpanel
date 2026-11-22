@@ -1,0 +1,26 @@
+[Unit]
+Description=Minecraft Hosting Platform scheduled jobs (renewals, dunning, cleanup)
+After=network-online.target mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/mcpanel
+ExecStart=/bin/sh -c '\
+  /usr/bin/php /var/www/mcpanel/bin/console license:check; \
+  /usr/bin/php /var/www/mcpanel/bin/console renewals && \
+  /usr/bin/php /var/www/mcpanel/bin/console suspend && \
+  /usr/bin/php /var/www/mcpanel/bin/console terminate && \
+  /usr/bin/php /var/www/mcpanel/bin/console carts:recover && \
+  /usr/bin/php /var/www/mcpanel/bin/console tickets:close && \
+  /usr/bin/php /var/www/mcpanel/bin/console prune'
+TimeoutStartSec=900
+Nice=10
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/mcpanel/storage /var/www/mcpanel/bootstrap/cache

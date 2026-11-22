@@ -1,0 +1,44 @@
+# Secrets and local environment
+.env
+.env.local
+*.pem
+*.key
+!license-server/keys/*.pub
+
+# Runtime data
+storage/database.sqlite
+storage/database.sqlite-*
+storage/logs/*
+!storage/logs/.gitkeep
+storage/cache/*
+!storage/cache/.gitkeep
+storage/invoices/*
+!storage/invoices/.gitkeep
+storage/attachments/
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Bundled PHP runtime (tools/php.zip + tools/php/)
+tools/php.zip
+tools/php/
+tools/tmp/
+
+# Backup / deployment artifacts
+*.tar.gz
+*.sql.gz
+*.zip
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# License server runtime data
+license-server/storage/*
+!license-server/storage/README.txt
+license-server/keys/*
+!license-server/keys/README.txt
+*.sqlite
+*.7z

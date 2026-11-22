@@ -1,0 +1,29 @@
+[Unit]
+Description=Minecraft Hosting Platform queue worker
+After=network-online.target mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/mcpanel
+ExecStart=/usr/bin/php /var/www/mcpanel/bin/worker
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcpanel-worker
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/mcpanel/storage /var/www/mcpanel/bootstrap/cache
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+
+[Install]
+WantedBy=multi-user.target

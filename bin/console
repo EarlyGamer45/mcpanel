@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require dirname(__DIR__) . '/bootstrap/autoload.php';
+
+use App\Console\Kernel;
+use App\Core\App;
+
+App::boot(dirname(__DIR__));
+
+$command = $argv[1] ?? 'help';
+$args = array_slice($argv, 2);
+
+exit(Kernel::run($command, $args));

@@ -1,0 +1,222 @@
+openapi: 3.1.0
+info:
+  title: Minecraft Hosting Platform API
+  version: 0.1.0
+  description: |
+    API pubblica in sola lettura. Gli importi sono sempre interi in centesimi.
+    Le azioni dei clienti non sono esposte qui: usano il sito con sessione e CSRF.
+servers:
+  - url: https://panel.example.com
+paths:
+  /api/v1/health:
+    get:
+      summary: Healthcheck per il monitoraggio
+      responses:
+        "200":
+          description: Servizio sano
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        "503":
+          description: Database non raggiungibile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+  /api/v1/catalog:
+    get:
+      summary: Catalogo pubblico
+      responses:
+        "200":
+          description: Piani disponibili
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: public, max-age=60
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [currency, products]
+                properties:
+                  currency:
+                    type: string
+                    example: EUR
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+  /configurator/quote:
+    post:
+      summary: Preventivo del configuratore
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id]
+              properties:
+                product_id:
+                  type: integer
+                ram_mb:
+                  type: integer
+                cpu_percent:
+                  type: integer
+                disk_mb:
+                  type: integer
+                cycle:
+                  type: string
+                  enum: [monthly, bimonthly, semestral, annual]
+                addons:
+                  type: array
+                  items:
+                    type: integer
+                coupon:
+                  type: string
+      responses:
+        "200":
+          description: Prezzo calcolato dal server
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [total_cents, lines]
+                properties:
+                  total:
+                    type: string
+                  total_cents:
+                    type: integer
+                  base:
+                    type: string
+                  discount:
+                    type: string
+                  cycle_label:
+                    type: string
+                  lines:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                        amount:
+                          type: string
+        "404":
+          description: Prodotto non trovato
+  /webhooks/stripe:
+    post:
+      summary: Webhook Stripe (firma obbligatoria)
+      description: |
+        Verifica Stripe-Signature con STRIPE_WEBHOOK_SECRET.
+        Idempotente su webhook_events(gateway, external_id).
+      parameters:
+        - in: header
+          name: Stripe-Signature
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Evento accettato o ignorato
+        "400":
+          description: Firma non valida
+  /webhooks/paypal:
+    post:
+      summary: Webhook PayPal
+      parameters:
+        - in: header
+          name: PAYPAL-TRANSMISSION-ID
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: PAYPAL-TRANSMISSION-SIG
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: PAYPAL-CERT-URL
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: PAYPAL-AUTH-ALGO
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: PAYPAL-TRANSMISSION-TIME
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Evento accettato o ignorato
+        "400":
+          description: Firma non valida
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status, time, checks]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        time:
+          type: string
+          format: date-time
+        checks:
+          type: object
+          properties:
+            database:
+              type: boolean
+            queue_pending:
+              type: integer
+            queue_failed:
+              type: integer
+            license:
+              type: string
+            pterodactyl_configured:
+              type: boolean
+            version:
+              type: string
+    Product:
+      type: object
+      required: [id, name, slug, prices_cents]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        category:
+          type: string
+        tier:
+          type: string
+        description:
+          type: string
+        prices_cents:
+          type: object
+          additionalProperties:
+            type: integer
+        min_ram_mb:
+          type: integer
+        max_ram_mb:
+          type: integer
