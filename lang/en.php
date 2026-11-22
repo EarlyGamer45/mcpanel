@@ -1007,7 +1007,7 @@ return [
     'need_different_resources' => 'Need a different setup?',
     'need_different_resources_body' => 'With the configurator you choose CPU, RAM and SSD and pay only for what you use.',
     'open_configurator' => 'Build your own',
-    'catalog_packs_title_default' => 'Expansions',
+    'catalog_packs_title_default' => 'Add expansions',
     'catalog_packs_lead_default' => 'Tick the ones you want to add to the package.',
     'packs_how_to' => 'Expansions are chosen inside each package and are optional.',
     'pack_effect' => 'Effect',

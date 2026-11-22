@@ -16,6 +16,16 @@ final class Catalog
         return App::db()->select('SELECT * FROM categories WHERE visible = 1 ORDER BY sort ASC, id ASC');
     }
 
+    /** Visible categories that have at least one visible product (for the catalogue tabs). */
+    public static function categoriesWithProducts(): array
+    {
+        return App::db()->select(
+            'SELECT c.* FROM categories c WHERE c.visible = 1
+             AND EXISTS (SELECT 1 FROM products p WHERE p.category_id = c.id AND p.visible = 1)
+             ORDER BY c.sort ASC, c.id ASC'
+        );
+    }
+
     /** @return list<array<string,mixed>> */
     public static function products(?int $categoryId = null, bool $includeHidden = false): array
     {

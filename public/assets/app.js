@@ -193,3 +193,25 @@
     group.addEventListener('change', apply);
     apply();
 })();
+
+// Catalogue: close an open expansions list when clicking elsewhere, show how many are ticked.
+document.addEventListener('click', (event) => {
+    document.querySelectorAll('details.plan-packs[open]').forEach((details) => {
+        if (!details.contains(event.target)) {
+            details.removeAttribute('open');
+        }
+    });
+});
+document.querySelectorAll('details.plan-packs').forEach((details) => {
+    const summary = details.querySelector('summary');
+    const badge = document.createElement('span');
+    badge.className = 'plan-packs-count';
+    summary.appendChild(badge);
+    const update = () => {
+        const n = details.querySelectorAll('input:checked').length;
+        badge.textContent = n > 0 ? String(n) : '';
+        badge.hidden = n === 0;
+    };
+    details.addEventListener('change', update);
+    update();
+});

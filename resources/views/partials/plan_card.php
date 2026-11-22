@@ -30,8 +30,9 @@ $planSpecs = $planFixed ? \App\Domain\Catalog::fixedSpecs($product) : null;
         <form method="get" action="<?= e(url('/server/' . $product['slug'])) ?>" class="plan-order">
             <?php if ($cardPacks !== []): ?>
                 <details class="plan-packs">
-                    <summary><?= icon('puzzle') ?><?= e($cardSettings['packs_title']) ?> <small class="muted">(<?= e(__('optional')) ?>)</small></summary>
-                    <?php if ($cardSettings['packs_lead'] !== ''): ?><p class="muted plan-packs-lead"><?= e($cardSettings['packs_lead']) ?></p><?php endif; ?>
+                    <summary><?= icon('puzzle') ?><?= e($cardSettings['packs_title']) ?></summary>
+                    <div class="plan-packs-body">
+                    <p class="muted plan-packs-lead"><strong><?= e(ucfirst(__('optional'))) ?></strong><?php if ($cardSettings['packs_lead'] !== ''): ?> · <?= e($cardSettings['packs_lead']) ?><?php endif; ?></p>
                     <?php foreach ($cardPacks as $cardPack): ?>
                         <label class="plan-pack">
                             <input type="checkbox" name="addons[]" value="<?= (int) $cardPack['id'] ?>">
@@ -39,6 +40,7 @@ $planSpecs = $planFixed ? \App\Domain\Catalog::fixedSpecs($product) : null;
                             <strong>+<?= e(money((int) $cardPack['price_cents'])) ?></strong>
                         </label>
                     <?php endforeach; ?>
+                    </div>
                 </details>
             <?php endif; ?>
             <button class="btn btn-block<?= $planFeatured ? '' : ' btn-ghost' ?>" type="submit"><?= e(__('order_now')) ?> <?= icon('arrow') ?></button>

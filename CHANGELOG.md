@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.0 – Tidier catalogue page
+
+- All fixed packages now sit on one row (they wrap on smaller screens) and cards line up evenly.
+- Expansions open as a small drop-down inside each package. Opening it no longer
+  stretches the other cards, a counter shows how many are ticked, and it closes
+  when you click elsewhere.
+- The custom configurator is shown as one wide card with the CPU / RAM / SSD ranges,
+  the starting price and the Configure button.
+- Category tabs only list categories that have products, and are hidden when only
+  one category is in use.
+- The generic "Compare tiers" table was removed. The help box is now a single slim row.
+- Better layout on phones.
+
 ## 1.0.0 – First public release
 
 First open source release of MCPanel, published under the MIT licence as a

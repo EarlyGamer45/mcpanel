@@ -1007,7 +1007,7 @@ return [
     'need_different_resources' => 'Ti serve una configurazione diversa?',
     'need_different_resources_body' => 'Con il configuratore scegli tu CPU, RAM e SSD e paghi solo quello che usi.',
     'open_configurator' => 'Configura su misura',
-    'catalog_packs_title_default' => 'Espansioni',
+    'catalog_packs_title_default' => 'Aggiungi espansioni',
     'catalog_packs_lead_default' => 'Spunta quelle che vuoi aggiungere al pacchetto.',
     'packs_how_to' => 'Le espansioni si scelgono dentro ogni pacchetto e non sono obbligatorie.',
     'pack_effect' => 'Effetto',

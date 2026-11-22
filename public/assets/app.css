@@ -199,7 +199,7 @@ section + section, section + form, form + section { margin-top: calc(40px * var(
 .card-flat { background: var(--surface-2); box-shadow: none; }
 .card h3 { margin-top: 0; }
 .card + .card { margin-top: var(--gap); }
-.grid > .card + .card, .stack > .card + .card { margin-top: 0; }
+.grid > .card + .card, .stack > .card + .card, .plan-grid > .card + .card, .configurator-list > .card + .card { margin-top: 0; }
 .card-title { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 1rem; }
 .card-title .icon { color: var(--muted); }
 .card-hint { color: var(--muted); font-size: .88rem; margin: -4px 0 14px; }
@@ -489,13 +489,39 @@ html[data-theme] .settings-menu a { display: flex; align-items: center; gap: 8px
 [hidden] { display: none !important; }
 .catalog-group .grid-3 { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
 
-/* Optional expansion packs inside fixed package cards */
-.plan-order{margin-top:auto}
-.plan-packs{border:1px solid var(--border);border-radius:8px;margin:0 0 12px;padding:0 10px;font-size:.9rem}
-.plan-packs summary{cursor:pointer;padding:9px 0;font-weight:600;display:flex;align-items:center;gap:6px}
-.plan-packs summary svg{width:16px;height:16px}
-.plan-packs[open] summary{border-bottom:1px solid var(--border);margin-bottom:6px}
-.plan-packs-lead{font-size:.82rem;margin:4px 0 6px}
-.plan-pack{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
-.plan-pack strong{font-size:.85rem;white-space:nowrap}
+/* Catalogue page */
+.catalog-hero{display:flex;flex-direction:column;gap:14px;margin-bottom:26px}
+.catalog-hero h1{margin:4px 0 6px}
+.catalog-tabs{margin:0}
+.catalog-group{margin-top:34px}
+.catalog-group:first-of-type{margin-top:0}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:16px;align-items:stretch}
+.plan-grid .plan{padding:18px}
+.plan-grid .plan h3{font-size:1.12rem!important}
+.plan-order{margin-top:auto;padding-top:12px}
+.plan-packs{position:relative;border:1px solid var(--border);border-radius:8px;margin:0 0 10px;font-size:.88rem;background:var(--surface)}
+.plan-packs summary{cursor:pointer;padding:8px 10px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px;list-style:none}
+.plan-packs summary::-webkit-details-marker{display:none}
+.plan-packs summary::after{content:"▾";margin-left:auto;color:var(--text-2)}
+.plan-packs[open] summary::after{content:"▴"}
+.plan-packs summary svg{width:15px;height:15px}
+.plan-packs-body{position:absolute;left:-1px;width:max(100%,280px);bottom:calc(100% + 4px);z-index:20;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,.14);padding:6px 10px 8px;max-height:300px;overflow:auto}
+.plan-packs-lead{font-size:.8rem;margin:4px 0 6px}
+.plan-pack{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:5px 0;cursor:pointer;border-top:1px solid var(--border)}
+.plan-pack:first-of-type{border-top:0}
 .plan-pack span{font-weight:400;line-height:1.3}
+.plan-pack strong{font-size:.82rem;white-space:nowrap}
+.configurator-list{display:grid;gap:14px}
+.configurator-card{display:grid;grid-template-columns:minmax(220px,1.4fr) 2fr auto;gap:22px;align-items:center;padding:20px 22px}
+.configurator-main{display:flex;gap:14px;align-items:flex-start}
+.configurator-main h3{margin:0 0 4px}
+.configurator-main p{margin:0}
+.configurator-ranges{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.configurator-ranges li{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.configurator-cta{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.configurator-cta .price{margin:0}
+.catalog-help{display:flex;align-items:center;gap:14px;margin-top:38px}
+.catalog-help div{flex:1 1 220px}
+.catalog-help p{margin:2px 0 0}
+@media (max-width:900px){.configurator-card{grid-template-columns:1fr}.configurator-cta{align-items:stretch}.catalog-help{flex-wrap:wrap}.catalog-help .btn{width:100%}}
+.plan-packs-count{background:var(--accent,#2563eb);color:#fff;border-radius:999px;font-size:.72rem;padding:0 7px;line-height:1.5}

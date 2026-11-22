@@ -36,7 +36,7 @@ final class PublicController
     {
         return Response::view('catalog', [
             'products' => Catalog::products(),
-            'categories' => Catalog::categories(),
+            'categories' => Catalog::categoriesWithProducts(),
             'cartCount' => Cart::count(),
         ]);
     }
@@ -51,7 +51,7 @@ final class PublicController
 
         return Response::view('catalog', [
             'products' => Catalog::products((int) $category['id']),
-            'categories' => Catalog::categories(),
+            'categories' => Catalog::categoriesWithProducts(),
             'currentCategory' => $category,
             'cartCount' => Cart::count(),
         ]);

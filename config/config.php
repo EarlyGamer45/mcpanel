@@ -22,7 +22,7 @@ return [
         'locale' => (string) Env::get('APP_LOCALE', 'en'),
         'locales' => ['en', 'it'],
         'timezone' => (string) Env::get('APP_TIMEZONE', 'Europe/Rome'),
-        'version' => '1.0.0',
+        'version' => '1.2.0',
         'license_key' => (string) Env::get('LICENSE_KEY', ''),
         'license_public_key' => (string) Env::get('LICENSE_PUBLIC_KEY', ''),
         'license_server' => rtrim((string) Env::get('LICENSE_SERVER', ''), '/'),

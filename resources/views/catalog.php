@@ -1,70 +1,91 @@
 <?php $pageTitle = __('catalog'); include __DIR__ . '/partials/head.php'; ?>
+<?php
+$catalogSettings = \App\Domain\Catalog::displaySettings();
+$groups = [
+    'fixed' => array_values(array_filter($products, static fn (array $p): bool => ($p['plan_type'] ?? 'custom') === 'fixed')),
+    'custom' => array_values(array_filter($products, static fn (array $p): bool => ($p['plan_type'] ?? 'custom') !== 'fixed')),
+];
+$order = $catalogSettings['order'] === 'custom_first' ? ['custom', 'fixed'] : ['fixed', 'custom'];
+$shown = 0;
+?>
 
-<section>
-    <span class="eyebrow"><?= e(__('catalog')) ?></span>
-    <h1><?= e(isset($currentCategory) ? (string) $currentCategory['name'] : __('catalog')) ?></h1>
-    <p class="lead"><?= e(isset($currentCategory) ? (string) $currentCategory['description'] : __('catalog_lead')) ?></p>
-
-    <div class="tabs" style="margin:22px 0 26px">
-        <a href="<?= e(url('/catalog')) ?>" class="<?= !isset($currentCategory) ? 'active' : '' ?>"><?= e(__('all')) ?></a>
-        <?php foreach ($categories as $category): ?>
-            <a href="<?= e(url('/catalog/' . $category['slug'])) ?>" class="<?= isset($currentCategory) && $currentCategory['id'] === $category['id'] ? 'active' : '' ?>"><?= e((string) $category['name']) ?></a>
-        <?php endforeach; ?>
+<section class="catalog-page">
+    <div class="catalog-hero">
+        <div>
+            <span class="eyebrow"><?= e(__('catalog')) ?></span>
+            <h1><?= e(isset($currentCategory) ? (string) $currentCategory['name'] : __('catalog')) ?></h1>
+            <p class="lead"><?= e(isset($currentCategory) ? (string) $currentCategory['description'] : __('catalog_lead')) ?></p>
+        </div>
+        <?php if (count($categories) > 1): ?>
+            <nav class="tabs catalog-tabs">
+                <a href="<?= e(url('/catalog')) ?>" class="<?= !isset($currentCategory) ? 'active' : '' ?>"><?= e(__('all')) ?></a>
+                <?php foreach ($categories as $category): ?>
+                    <a href="<?= e(url('/catalog/' . $category['slug'])) ?>" class="<?= isset($currentCategory) && (int) $currentCategory['id'] === (int) $category['id'] ? 'active' : '' ?>"><?= e((string) $category['name']) ?></a>
+                <?php endforeach; ?>
+            </nav>
+        <?php endif; ?>
     </div>
 
-    <?php
-    $catalogSettings = \App\Domain\Catalog::displaySettings();
-    $groups = [
-        'fixed' => array_values(array_filter($products, static fn (array $p): bool => ($p['plan_type'] ?? 'custom') === 'fixed')),
-        'custom' => array_values(array_filter($products, static fn (array $p): bool => ($p['plan_type'] ?? 'custom') !== 'fixed')),
-    ];
-    $order = $catalogSettings['order'] === 'custom_first' ? ['custom', 'fixed'] : ['fixed', 'custom'];
-    $shown = 0;
-    ?>
     <?php foreach ($order as $group): ?>
         <?php if (!$catalogSettings['show_' . $group] || $groups[$group] === []) { continue; } $shown++; ?>
-        <div class="catalog-group" id="<?= e($group === 'fixed' ? 'piani' : 'configuratore') ?>">
+        <div class="catalog-group" id="<?= e($group === 'fixed' ? 'packages' : 'configurator') ?>">
             <div class="section-head">
                 <div>
                     <h2><?= e($catalogSettings[$group . '_title']) ?></h2>
                     <?php if ($catalogSettings[$group . '_lead'] !== ''): ?><p class="muted"><?= e($catalogSettings[$group . '_lead']) ?></p><?php endif; ?>
                 </div>
             </div>
-            <div class="grid grid-3">
-                <?php foreach ($groups[$group] as $product): ?>
-                    <?php include __DIR__ . '/partials/plan_card.php'; ?>
-                <?php endforeach; ?>
-            </div>
+            <?php if ($group === 'fixed'): ?>
+                <div class="plan-grid">
+                    <?php foreach ($groups['fixed'] as $product): ?>
+                        <?php include __DIR__ . '/partials/plan_card.php'; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="configurator-list">
+                    <?php foreach ($groups['custom'] as $product): ?>
+                        <?php
+                        $planOptions = $product['options'] ?? [];
+                        $range = static fn (string $r): string => isset($planOptions[$r])
+                            ? \App\Domain\PriceCalculator::humanResource($r, (int) $planOptions[$r]['min_value']) . ' – ' . \App\Domain\PriceCalculator::humanResource($r, (int) $planOptions[$r]['max_value'])
+                            : '';
+                        ?>
+                        <article class="card configurator-card">
+                            <div class="configurator-main">
+                                <span class="feature-icon"><?= icon('settings') ?></span>
+                                <div>
+                                    <h3><?= e((string) $product['name']) ?></h3>
+                                    <p class="muted"><?= e((string) $product['description']) ?></p>
+                                </div>
+                            </div>
+                            <ul class="configurator-ranges">
+                                <?php foreach (['cpu' => 'CPU', 'ram' => 'RAM', 'disk' => 'SSD'] as $resource => $label): ?>
+                                    <?php if ($range($resource) !== ''): ?><li><small class="muted"><?= e($label) ?></small><strong><?= e($range($resource)) ?></strong></li><?php endif; ?>
+                                <?php endforeach; ?>
+                            </ul>
+                            <div class="configurator-cta">
+                                <p class="price"><small class="muted"><?= e(__('from')) ?></small> <?= e(money((int) $product['from_cents'])) ?> <small class="muted">/ <?= e(__('month_short')) ?></small></p>
+                                <a class="btn" href="<?= e(url('/server/' . $product['slug'])) ?>"><?= icon('settings') ?><?= e(__('configure')) ?></a>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     <?php endforeach; ?>
+
     <?php if ($shown === 0): ?>
         <p class="muted"><?= e(__('no_products')) ?></p>
     <?php endif; ?>
-</section>
 
-<section class="two-col">
-    <div>
-        <h2><?= e(__('compare_tiers')) ?></h2>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr><th><?= e(__('feature')) ?></th><th><?= e(__('tier_budget')) ?></th><th><?= e(__('tier_standard')) ?></th><th><?= e(__('tier_premium')) ?></th></tr>
-                </thead>
-                <tbody>
-                <tr><td><?= e(__('cpu_priority')) ?></td><td>—</td><td>+</td><td>++</td></tr>
-                <tr><td><?= e(__('included_backups')) ?></td><td>1</td><td>3</td><td>5</td></tr>
-                <tr><td><?= e(__('support')) ?></td><td><?= e(__('standard')) ?></td><td><?= e(__('priority')) ?></td><td><?= e(__('dedicated')) ?></td></tr>
-                <tr><td><?= e(__('modpack_ready')) ?></td><td>—</td><td>+</td><td>+</td></tr>
-                </tbody>
-            </table>
+    <div class="card card-flat catalog-help">
+        <span class="feature-icon"><?= icon('chat') ?></span>
+        <div>
+            <strong><?= e(__('need_help')) ?></strong>
+            <p class="muted"><?= e(__('need_help_body')) ?></p>
         </div>
+        <a class="btn btn-ghost" href="<?= e(url('/knowledge')) ?>"><?= e(__('knowledge_base')) ?></a>
     </div>
-    <aside class="card">
-        <span class="feature-icon" style="margin-bottom:12px"><?= icon('chat') ?></span>
-        <h3><?= e(__('need_help')) ?></h3>
-        <p class="muted"><?= e(__('need_help_body')) ?></p>
-        <a class="btn btn-ghost btn-block" href="<?= e(url('/knowledge')) ?>"><?= e(__('knowledge_base')) ?></a>
-    </aside>
 </section>
 
 <?php include __DIR__ . '/partials/foot.php'; ?>
