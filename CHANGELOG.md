@@ -1,35 +1,51 @@
 # Changelog
 
-## 2.1.0 – Open source release
+## 1.0.0 – First public release
 
-- Published under the MIT licence as a **vibecoded** project (see README).
-- Generic branding: the default name is "MCPanel Hosting". Change it in Admin → Appearance.
-- English is now the default language (Italian is still included).
-- Demo and default catalogue data translated to English. The package slugs are now
-  `package-2gb` … `package-16gb` and `custom-server`. Installs that already have
-  the old Italian slugs are recognised by `catalog:packages`, so no duplicates are created.
-- Detailed documentation moved to `docs/it/` (Italian).
+First open source release of MCPanel, published under the MIT licence as a
+**vibecoded** project (see README). Tested on Ubuntu Server 26.04.1 LTS: the
+panel and the licence server both work.
 
-## 2.0.0
+### Catalogue and sales
+- Fixed packages with set RAM, vCPU, SSD and price.
+- "Custom server" configurator: the customer picks CPU, RAM and SSD and the
+  price follows the choice.
+- Optional expansion packs inside each package: +RAM, +vCPU, +SSD, CPU
+  performance, daily backups and extra services.
+- CPU shown as vCPU (cores); prices entered in euros and cents.
+- Cart, coupons, monthly / bimonthly / semestral / yearly billing cycles, VAT.
 
-- **Catalogue**
-  - Fixed packages, a custom configurator (CPU / RAM / SSD) and optional
-    expansion packs inside each package.
-  - CPU is shown as vCPU (cores).
-- **Admin**
-  - Manage customers (block, disable, delete), accept wallet top-ups, delete
-    any order, edit nodes and locations.
-  - Activate the licence from the browser.
-- **Accounts**
-  - Customers and admins can change their email and password.
-  - Login with email or username.
-  - New console commands `user:create`, `user:password`, `user:email`,
-    `user:delete`, `user:list-admins` and `catalog:packages`.
-- **Licence**
-  - Sales and customisation are blocked without a valid licence.
-  - The licence server can run locally or on a separate machine.
-- **Encryption keys**
-  - The keys are copied to `/etc/mcpanel/keys.env` and reused on reinstall, so
-    stored emails are no longer lost.
+### Payments and billing
+- Stripe Checkout, PayPal, bank transfer and prepaid wallet.
+- Wallet top-up requests, accepted or rejected by the admin.
+- PDF invoices, renewal invoices, reminders, suspension, termination.
 
-The full history of the Italian releases is in [docs/it/CHANGELOG.md](docs/it/CHANGELOG.md).
+### Provisioning
+- Automatic server creation on Pterodactyl (user, allocation, egg, variables),
+  retries, reconciliation, nodes and locations editable from the panel.
+
+### Client area
+- Services with console, invoices, wallet, tickets.
+- Change email and password, TOTP 2FA, login with email or username.
+
+### Admin area
+- Orders (any order can be deleted), services, tickets.
+- Customers: block, disable, delete, reset password.
+- Products, expansion packs, coupons, reports, appearance, feature flags, logs.
+- Licence activation from the browser.
+
+### Console
+- `user:create`, `user:password`, `user:email`, `user:delete`, `user:list-admins`.
+- `license:activate`, `license:check`, `license:status`, `catalog:packages`.
+
+### Licence server
+- Standalone app with Ed25519-signed responses; runs on the same machine or a
+  separate one. Without a valid licence the panel blocks sales and customisation.
+
+### Install and security
+- `deploy/install.sh` (domain + HTTPS or IP + HTTP), `deploy/update.sh`.
+- Encryption keys kept in `/etc/mcpanel/keys.env` so reinstalls do not lose emails.
+- Argon2id passwords, AES-256-GCM encryption, CSRF, CSP, rate limiting, audit log.
+- English by default, Italian included.
+
+The history of the private development builds is in [docs/it/CHANGELOG.md](docs/it/CHANGELOG.md) (Italian).
