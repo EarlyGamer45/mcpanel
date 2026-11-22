@@ -17,6 +17,11 @@ No framework and no Composer: plain PHP 8.5 (small MVC), MariaDB in production,
 SQLite for demo and tests, Nginx + PHP-FPM, systemd. Pterodactyl itself is not
 modified; the panel only talks to its official APIs.
 
+## Tested on
+
+**Ubuntu Server 26.04.1 LTS**: both the panel and the licence server have been
+installed and tested on it and work correctly.
+
 ## Features
 
 - **Catalogue**
@@ -54,7 +59,7 @@ modified; the panel only talks to its official APIs.
 
 | Environment | Requirements |
 |---|---|
-| Production | Ubuntu Server 26.04 LTS, PHP 8.5 FPM (`pdo_mysql`, `mbstring`, `curl`, `intl`, `zip`), MariaDB 11.x, Nginx |
+| Production | Ubuntu Server 26.04 LTS (tested on 26.04.1), PHP 8.5 FPM (`pdo_mysql`, `mbstring`, `curl`, `intl`, `zip`), MariaDB 11.x, Nginx |
 | Development | PHP 8.5 CLI with `pdo_sqlite`, `openssl`, `sodium` |
 | External | Pterodactyl Panel 1.11+ with Application API and Client API keys |
 
